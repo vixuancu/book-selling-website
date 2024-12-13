@@ -17,7 +17,7 @@ declare global {
     };
     results: T[];
   }
-  interface Ilogin {
+  interface ILogin {
     access_token: string;
     user: {
       email: string;
@@ -27,5 +27,21 @@ declare global {
       avatar: string;
       id: string;
     };
+  }
+  interface IRegister {
+    _id: string;
+    email: string;
+    fullName: string;
+  }
+  interface IUser {
+    email: string;
+    phone: string;
+    fullName: string;
+    role: string;
+    avatar: string;
+    id: string;
+  }
+  interface IFetchAccount {
+    user: IUser;
   }
 }
