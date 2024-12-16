@@ -5,7 +5,7 @@ import { useState } from "react";
 import Exceljs from "exceljs";
 import { Buffer } from "buffer";
 import { bulkCreateUserAPI } from "@/services/api";
-import templateFile from "@/assets/template/user.xlsx?url";
+import templateFile from "@/assets/template/user.xlsx?url"; // thêm ?url xử dụng file với ts
 const { Dragger } = Upload;
 interface IProps {
   openModalImport: boolean;

@@ -14,6 +14,8 @@ import { useRef, useState } from "react";
 import DetailUser from "./detail.user";
 import CreateUser from "./create.user";
 import ImportUser from "./data/import.user";
+import { CSVLink } from "react-csv";
+import UpdateUser from "./update.user";
 
 type TSearch = {
   fullName: string;
@@ -27,6 +29,9 @@ const TableUser = () => {
   const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
   const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
   const [openModalImport, setOpenModalImport] = useState<boolean>(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null);
+  const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
   const columns: ProColumns<IUserTable>[] = [
     {
       dataIndex: "index",
@@ -79,6 +84,10 @@ const TableUser = () => {
         return (
           <>
             <EditTwoTone
+              onClick={() => {
+                setOpenModalUpdate(true);
+                setDataUpdate(entity);
+              }}
               twoToneColor={"#f57800"}
               style={{ cursor: "pointer", marginRight: 15 }}
             />
@@ -132,6 +141,7 @@ const TableUser = () => {
           const res = await getUserAPI(query);
           if (res.data) {
             setMeta(res.data.meta);
+            setCurrentDataTable(res.data?.result ?? []);
           }
           return {
             // data: data.data,
@@ -158,7 +168,9 @@ const TableUser = () => {
         headerTitle="Table user"
         toolBarRender={() => [
           <Button icon={<ExportOutlined />} type="primary">
-            Export
+            <CSVLink data={currentDataTable} filename="export-user.csv">
+              Export
+            </CSVLink>
           </Button>,
           <Button
             icon={<CloudUploadOutlined />}
@@ -194,6 +206,13 @@ const TableUser = () => {
         openModalImport={openModalImport}
         setOpenModalImport={setOpenModalImport}
         refreshTable={refreshTable}
+      />
+      <UpdateUser
+        refreshTable={refreshTable}
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
+        dataUpdate={dataUpdate}
+        setDataUpdate={setDataUpdate}
       />
     </>
   );
