@@ -1,4 +1,4 @@
-import { getUserAPI } from "@/services/api";
+import { deleteUserAPI, getUserAPI } from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";
 import {
   CloudUploadOutlined,
@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable, TableDropdown } from "@ant-design/pro-components";
-import { Button, Space, Tag } from "antd";
+import { App, Button, Popconfirm } from "antd";
 import { useRef, useState } from "react";
 import DetailUser from "./detail.user";
 import CreateUser from "./create.user";
@@ -31,7 +31,23 @@ const TableUser = () => {
   const [openModalImport, setOpenModalImport] = useState<boolean>(false);
   const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
   const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null);
+  const [isDeleteUser, setIsDeleteUser] = useState<boolean>(false);
+  const { message, notification } = App.useApp();
   const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
+
+  const handleDeleteUser = async (_id: string) => {
+    setIsDeleteUser(true);
+    const res = await deleteUserAPI(_id);
+    if (res && res.data) {
+      message.success("Xoá user thành công");
+      refreshTable();
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra",
+        description: res.message,
+      });
+    }
+  };
   const columns: ProColumns<IUserTable>[] = [
     {
       dataIndex: "index",
@@ -91,10 +107,23 @@ const TableUser = () => {
               twoToneColor={"#f57800"}
               style={{ cursor: "pointer", marginRight: 15 }}
             />
-            <DeleteTwoTone
-              twoToneColor={"#ff4d4f"}
-              style={{ cursor: "pointer", marginRight: 15 }}
-            />
+
+            <Popconfirm
+              placement="leftTop"
+              title="Xác nhân xoá User"
+              description="Bạn có chắc chắn muốn xoá user này không"
+              onConfirm={() => handleDeleteUser(entity._id)}
+              okText="Confirm"
+              cancelText="Huỷ"
+              okButtonProps={{ loading: isDeleteUser }}
+            >
+              <span style={{ paddingLeft: "20px" }}>
+                <DeleteTwoTone
+                  twoToneColor={"#ff4d4f"}
+                  style={{ cursor: "pointer" }}
+                />
+              </span>
+            </Popconfirm>
           </>
         );
       },
