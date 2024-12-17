@@ -12,7 +12,8 @@ import {
 import { FORMATE_DATE_DEFAULT } from "@/services/helper";
 import dayjs from "dayjs";
 import { GetProp } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 interface Iprops {
   openViewDetail: boolean;
   setOpenViewDetail: (v: boolean) => void;
@@ -41,32 +42,60 @@ const DetailBook = (props: Iprops) => {
     });
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-2",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-3",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-4",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-  ]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  useEffect(() => {
+    if (dataViewDetail) {
+      let imgThumbnail: any = {},
+        imgSlider: UploadFile[] = [];
+      if (dataViewDetail.thumbnail) {
+        imgThumbnail = {
+          uid: uuidv4(),
+          name: dataViewDetail.thumbnail,
+          status: "done",
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+            dataViewDetail.thumbnail
+          }`,
+        };
+      }
+      if (dataViewDetail.slider && dataViewDetail.slider.length > 0) {
+        dataViewDetail.slider.map((item) => {
+          imgSlider.push({
+            uid: uuidv4(),
+            name: item,
+            status: "done",
+            url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+          });
+        });
+      }
+      setFileList([imgThumbnail, ...imgSlider]);
+    }
+  }, [dataViewDetail]);
+  // const [fileList, setFileList] = useState<UploadFile[]>([
+  //   {
+  //     uid: "-1",
+  //     name: "image.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  //   {
+  //     uid: "-2",
+  //     name: "image.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  //   {
+  //     uid: "-3",
+  //     name: "image.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  //   {
+  //     uid: "-4",
+  //     name: "image.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  // ]);
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
