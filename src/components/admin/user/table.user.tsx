@@ -148,25 +148,34 @@ const TableUser = () => {
         request={async (params, sort, filter) => {
           console.log(params, sort, filter);
           let query = "";
+          ////
+
+          // Xử lý các tham số lọc (params)
           if (params) {
             query += `current=${params.current}&pageSize=${params.pageSize}`;
-            if (params.email) {
-              query += `&email=/${params.email}/i`;
-            }
-            if (params.fullName) {
-              query += `&fullName=/${params.fullName}/i`;
-            }
             const createDateRange = dateRangeValidate(params.createdAtRange);
             if (createDateRange) {
               query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`;
             }
-          }
+            const paramFields = ["email", "fullName"];
 
-          if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
-          } else query += `&sort=-createdAt`;
+            paramFields.forEach((field) => {
+              const value = params[field as keyof TSearch];
+              if (value) {
+                query += `&${field}=/${value}/i`;
+              }
+            });
+          }
+          // Xử lý sắp xếp (sort)
+          if (sort) {
+            Object.keys(sort).forEach((field) => {
+              query += `&sort=${
+                sort[field] === "ascend" ? field : `-${field}`
+              }`;
+            });
+          } else {
+            query += "&sort=-createdAt"; // Sắp xếp mặc định
+          }
           const res = await getUserAPI(query);
           if (res.data) {
             setMeta(res.data.meta);

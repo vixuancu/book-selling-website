@@ -161,39 +161,28 @@ const TableBook = () => {
         request={async (params, sort, filter) => {
           console.log("params, sort, filter:", params, sort, filter);
           let query = "";
+          // Xử lý các tham số lọc (params)
           if (params) {
             query += `current=${params.current}&pageSize=${params.pageSize}`;
-            //  xử dụng regex. tronh nối query để ko phân biệt chữ hoa chữ thường ==> /${param}/i
-            if (params.mainText) {
-              query += `&mainText=/${params.mainText}/i`;
-            }
-            if (params.author) {
-              query += `&author=/${params.author}/i`;
-            }
+
+            const paramFields = ["mainText", "author"];
+
+            paramFields.forEach((field) => {
+              const value = params[field as keyof TSearch];
+              if (value) {
+                query += `&${field}=/${value}/i`;
+              }
+            });
           }
-          // sort table
-          if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
-          } else query += `&sort=-createdAt`;
-          if (sort && sort.mainText) {
-            query += `&sort=${
-              sort.mainText === "ascend" ? "mainText" : "-mainText"
-            }`;
-          }
-          if (sort && sort.mainText) {
-            query += `&sort=${
-              sort.mainText === "ascend" ? "mainText" : "-mainText"
-            }`;
-          }
-          if (sort && sort.category) {
-            query += `&sort=${
-              sort.category === "ascend" ? "category" : "-category"
-            }`;
-          }
-          if (sort && sort.price) {
-            query += `&sort=${sort.price === "ascend" ? "price" : "-price"}`;
+          // Xử lý sắp xếp (sort)
+          if (sort) {
+            Object.keys(sort).forEach((field) => {
+              query += `&sort=${
+                sort[field] === "ascend" ? field : `-${field}`
+              }`;
+            });
+          } else {
+            query += "&sort=-createdAt"; // Sắp xếp mặc định
           }
 
           const res = await getBookAPI(query);
@@ -226,7 +215,7 @@ const TableBook = () => {
         headerTitle="Table user"
         toolBarRender={() => [
           <Button icon={<ExportOutlined />} type="primary">
-            <CSVLink data={currentDataTable} filename="export-user.csv">
+            <CSVLink data={currentDataTable} filename="export-book.csv">
               Export
             </CSVLink>
           </Button>,
@@ -249,7 +238,13 @@ const TableBook = () => {
           </Button>,
         ]}
       />
-      <DetailBook />
+
+      <DetailBook
+        openViewDetail={openViewDetail}
+        setOpenViewDetail={setOpenViewDetail}
+        dataViewDetail={dataViewDetail}
+        setDataViewDetail={setDataViewDetail}
+      />
     </>
   );
 };
