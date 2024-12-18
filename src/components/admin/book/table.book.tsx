@@ -12,6 +12,7 @@ import { App, Button, Popconfirm } from "antd";
 import { useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import DetailBook from "./detail.book";
+import CreateBook from "./create.book";
 
 type TSearch = {
   mainText: string;
@@ -244,6 +245,12 @@ const TableBook = () => {
         setOpenViewDetail={setOpenViewDetail}
         dataViewDetail={dataViewDetail}
         setDataViewDetail={setDataViewDetail}
+      />
+
+      <CreateBook
+        openModalCreate={openModalCreate}
+        setOpenModalCreate={setOpenModalCreate}
+        refreshTable={refreshTable}
       />
     </>
   );

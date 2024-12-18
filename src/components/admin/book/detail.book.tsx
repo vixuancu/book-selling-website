@@ -59,6 +59,7 @@ const DetailBook = (props: Iprops) => {
       }
       if (dataViewDetail.slider && dataViewDetail.slider.length > 0) {
         dataViewDetail.slider.map((item) => {
+          // console.log("item:", item);
           imgSlider.push({
             uid: uuidv4(),
             name: item,
@@ -77,25 +78,6 @@ const DetailBook = (props: Iprops) => {
   //     status: "done",
   //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
   //   },
-  //   {
-  //     uid: "-2",
-  //     name: "image.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  //   {
-  //     uid: "-3",
-  //     name: "image.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  //   {
-  //     uid: "-4",
-  //     name: "image.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  // ]);
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
