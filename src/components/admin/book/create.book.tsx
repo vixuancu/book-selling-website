@@ -1,4 +1,4 @@
-import { getCategoryAPI, uploadFileAPI } from "@/services/api";
+import { createBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
@@ -21,6 +21,7 @@ import {
 import { UploadChangeParam } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
+import { error } from "console";
 
 interface IProps {
   openModalCreate: boolean;
@@ -40,7 +41,7 @@ type FieldType = {
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type UserUploadType = "thumbnail" | "slider";
 const CreateBook = (props: IProps) => {
-  const { openModalCreate, setOpenModalCreate } = props;
+  const { openModalCreate, setOpenModalCreate, refreshTable } = props;
   const { message, notification } = App.useApp();
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -70,9 +71,35 @@ const CreateBook = (props: IProps) => {
   }, []);
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     setIsSubmit(true);
-    console.log("values form: ", values, fileListThumbnail, fileListSlider);
+    console.log("values form: ", values);
     console.log("values fileListThumbnail: ", fileListThumbnail);
     console.log("values fileListSlider: ", fileListSlider);
+
+    const { mainText, author, price, category, quantity } = values;
+    const thumbnail = fileListThumbnail?.[0]?.name ?? "";
+    const slider = fileListSlider.map((item) => item.name) ?? [];
+    const res = await createBookAPI(
+      thumbnail,
+      slider,
+      mainText,
+      author,
+      price,
+      quantity,
+      category
+    );
+    if (res && res.data) {
+      message.success("Tạo mới sách thành công!");
+      form.resetFields();
+      setFileListSlider([]);
+      setFileListThumbnail([]);
+      setOpenModalCreate(false);
+      refreshTable();
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra",
+        description: res.message,
+      });
+    }
     setIsSubmit(false);
   };
 
