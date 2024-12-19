@@ -1,4 +1,4 @@
-import { deleteUserAPI, getBookAPI } from "@/services/api";
+import { deleteBookAPI, getBookAPI } from "@/services/api";
 import {
   CloudUploadOutlined,
   DeleteTwoTone,
@@ -38,9 +38,9 @@ const TableBook = () => {
 
   const handleDeleteBook = async (_id: string) => {
     setIsDeleteBook(true);
-    const res = await deleteUserAPI(_id);
+    const res = await deleteBookAPI(_id);
     if (res && res.data) {
-      message.success("Xoá user thành công");
+      message.success("Xoá Book thành công");
       refreshTable();
     } else {
       notification.error({
@@ -120,22 +120,31 @@ const TableBook = () => {
           <>
             <EditTwoTone
               twoToneColor="#f57800"
-              style={{ cursor: "pointer", margin: "0 7px" }}
+              style={{
+                cursor: "pointer",
+                paddingRight: "0 5px",
+                marginRight: "5px",
+              }}
               onClick={() => {
                 setOpenModalUpdate(true);
                 setDataUpdate(entity);
               }}
             />
             <Popconfirm
-              placement="leftTop"
+              placement="leftTop" // vị trí modal confirm
               title={"Xác nhận xóa book"}
               description={"Bạn có chắc chắn muốn xóa book này ?"}
               onConfirm={() => handleDeleteBook(entity._id)}
               okText="Xác nhận"
               cancelText="Hủy"
-              okButtonProps={{ loading: isDeleteBook }}
+              okButtonProps={{ loading: isDeleteBook }} // đọc lại mã nguồn để biết thêm thuộc tính
             >
-              <span style={{ cursor: "pointer" }}>
+              <span
+                style={{
+                  cursor: "pointer",
+                  paddingLeft: "5px",
+                }}
+              >
                 <DeleteTwoTone twoToneColor="#ff4d4f" />
               </span>
             </Popconfirm>
@@ -197,8 +206,8 @@ const TableBook = () => {
 
           const res = await getBookAPI(query);
           if (res.data) {
-            setMeta(res.data.meta);
-            setCurrentDataTable(res.data?.result ?? []);
+            setMeta(res.data?.meta); // meta quản lí table pages
+            setCurrentDataTable(res.data?.result ?? []); // quản lí giá trị trong table hiện tại theo trang
           }
           return {
             // data: data.data,
@@ -224,11 +233,12 @@ const TableBook = () => {
         }}
         headerTitle="Table user"
         toolBarRender={() => [
-          <Button icon={<ExportOutlined />} type="primary">
-            <CSVLink data={currentDataTable} filename="export-book.csv">
+          // để CSV link ra ngoài để tránh bị sự kiện nổi bọt giống phần làm import . để csvlink ra ngoài thì bấm trực tiếp vào nó thay vào Button
+          <CSVLink data={currentDataTable} filename="export-book.csv">
+            <Button icon={<ExportOutlined />} type="primary">
               Export
-            </CSVLink>
-          </Button>,
+            </Button>
+          </CSVLink>,
           <Button
             icon={<CloudUploadOutlined />}
             type="primary"
