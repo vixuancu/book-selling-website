@@ -167,15 +167,12 @@ const TableUser = () => {
             });
           }
           // Xử lý sắp xếp (sort)
-          if (sort) {
-            Object.keys(sort).forEach((field) => {
-              query += `&sort=${
-                sort[field] === "ascend" ? field : `-${field}`
-              }`;
-            });
-          } else {
-            query += "&sort=-createdAt"; // Sắp xếp mặc định
-          }
+          if (sort && sort.createdAt) {
+            query += `&sort=${
+              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
+            }`;
+          } else query += `&sort=-createdAt`;
+
           const res = await getUserAPI(query);
           if (res.data) {
             setMeta(res.data.meta);

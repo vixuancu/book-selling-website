@@ -123,3 +123,24 @@ export const createBookAPI = (
     category,
   });
 };
+export const updateBookAPI = (
+  _id: string,
+  thumbnail: string,
+  slider: string[],
+  mainText: string,
+  author: string,
+  price: number,
+  quantity: number,
+  category: string
+) => {
+  const urlBackend = `/api/v1/book/${_id}`;
+  return axios.put<IBackendRes<IBookTable>>(urlBackend, {
+    thumbnail,
+    slider,
+    mainText,
+    author,
+    price,
+    quantity,
+    category,
+  });
+};
