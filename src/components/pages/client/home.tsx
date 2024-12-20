@@ -17,10 +17,11 @@ import type { FormProps } from "antd";
 import { useEffect, useState } from "react";
 import "styles/home.scss";
 type FieldType = {
-  fullName: string;
-  password: string;
-  email: string;
-  phone: string;
+  range: {
+    from: number;
+    to: number;
+  };
+  category: string[];
 };
 
 // phần này xử dụng state react nhiều
@@ -42,30 +43,50 @@ const HomePage = () => {
   //
   const [form] = Form.useForm();
   const handleChangeFilter = (changedValues: any, values: any) => {
-    console.log(">>> check handleChangeFilter", changedValues, values);
+    console.log(">>> check handleChangeFilter:", changedValues, values);
+    //only fire if category changed
+    if (changedValues.category) {
+      const cate = values.category;
+      if (cate && cate.length > 0) {
+        const f = cate.join(","); // sử dụng toán tử in api parram
+        setFilter(`category=${f}`);
+      } else {
+        // reset data => fetch all
+        setFilter("");
+      }
+    }
   };
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {};
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    if (values?.range?.from >= 0 && values?.range?.to >= 0) {
+      let f = `price>=${values?.range?.from}&price<=${values?.range?.to}`;
+      if (values?.category?.length > 0) {
+        const cate = values.category.join(",");
+        f += `&category=${cate}`;
+      }
+      setFilter(f);
+    }
+  };
   const onChange = (key: string) => {
     console.log(key);
   };
   const items = [
     {
-      key: "1",
+      key: "sort=-sold",
       label: `Phổ biến`,
       children: <></>,
     },
     {
-      key: "2",
+      key: "sort=-updatedAt",
       label: `Hàng Mới`,
       children: <></>,
     },
     {
-      key: "3",
+      key: "sort=price",
       label: `Giá Thấp Đến Cao`,
       children: <></>,
     },
     {
-      key: "4",
+      key: "sort=-price",
       label: `Giá Cao Đến Thấp`,
       children: <></>,
     },
@@ -139,18 +160,22 @@ const HomePage = () => {
                   {" "}
                   <FilterTwoTone style={{ fontWeight: 500 }} /> Bộ lọc tìm kiếm
                 </span>
-                {/* nhấn nút reload thì xoá hết dữ liệu trong form */}
+                {/* nhấn nút reload thì xoá hết dữ liệu trong form, khi thêm thuộc tính onclick thì tự hiện cursor , có thể bấm dc */}
                 <ReloadOutlined
                   title="Reset"
-                  onClick={() => form.resetFields()}
+                  onClick={() => {
+                    form.resetFields();
+                    setFilter("");
+                  }}
                 />
               </div>
 
               <Form
                 onFinish={onFinish}
                 form={form}
-                onValuesChange={(changedValues, values) =>
-                  handleChangeFilter(changedValues, values)
+                onValuesChange={
+                  (changedValues, values) =>
+                    handleChangeFilter(changedValues, values) // giá trị đầu tiên là name của FormItem
                 }
               >
                 <Form.Item
@@ -181,6 +206,7 @@ const HomePage = () => {
                   <Row gutter={[10, 10]} style={{ width: "100%" }}>
                     <Col xl={11} md={24}>
                       <Form.Item name={["range", "from"]}>
+                        {/* name kiêu mảnh range là cha,from là con */}
                         <InputNumber
                           name="from"
                           min={0}
@@ -273,11 +299,13 @@ const HomePage = () => {
                 style={{ padding: "20px", background: "#fff", borderRadius: 5 }}
               >
                 <Row>
+                  {/* overflowX: Thuộc tính này quyết định cách xử lý khi nội dung bên trong một phần tử vượt quá chiều rộng của phần tử đó (theo trục X).
+                      auto: Khi nội dung vượt quá giới hạn kích thước theo chiều ngang, trình duyệt sẽ tự động thêm thanh cuộn ngang để người dùng cuộn và xem toàn bộ nội dung. Nếu nội dung không vượt quá giới hạn, thanh cuộn sẽ không xuất hiện. */}
                   <Tabs
                     defaultActiveKey="sort=-sold"
                     items={items}
                     onChange={(value) => {
-                      setSortQuery(value);
+                      setSortQuery(value); // value chính là giá trị của item:key
                     }}
                     style={{ overflowX: "auto" }}
                   />

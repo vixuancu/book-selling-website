@@ -156,7 +156,7 @@ const TableBook = () => {
   const refreshTable = () => {
     actionRef.current?.reload();
   };
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(); // sử dụng useRef để gọi hành động reload table
   const [meta, setMeta] = useState({
     current: 1,
     pageSize: 5,
@@ -165,7 +165,7 @@ const TableBook = () => {
   });
   return (
     <>
-      <ProTable<IBookTable, TSearch>
+      <ProTable<IBookTable, TSearch> // có kiểu dữ liệu trong table là IBookTable và TSearch là kiểu dữ liệu của param
         columns={columns}
         actionRef={actionRef}
         cardBordered
@@ -210,7 +210,7 @@ const TableBook = () => {
             setCurrentDataTable(res.data?.result ?? []); // quản lí giá trị trong table hiện tại theo trang
           }
           return {
-            // data: data.data,
+            // đọc ,
             data: res.data?.result,
             page: 1,
             success: true,
