@@ -1,71 +1,62 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "styles/book.scss";
 import ModalGallery from "./modal.gallery";
 import ImageGallery from "react-image-gallery";
 import { Col, Divider, Rate, Row } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
-interface IProps {}
+interface IProps {
+  currentBook: IBookTable | null;
+}
 const BookDetail = (props: IProps) => {
+  const { currentBook } = props;
+
+  const [imgGallery, setImgGallery] = useState<
+    {
+      original: string;
+      thumbnail: string;
+      originalClass: string; // class này cho vào để custom Css
+      thumbnailClass: string; // 2 cái này để cho vào css
+    }[]
+  >([]);
   const [isOpenModalGallery, setIsOpenModalGallery] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const refGallery = useRef<ImageGallery>(null); // thuộc tính truy cập trực tiếp vào DOM, mà không làm cho component render
-  const images = [
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-      originalClass: "original-image", // class này cho vào để custom Css
-      thumbnailClass: "thumbnail-image", // 2 cái này để cho vào css
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-      originalClass: "original-image",
-      thumbnailClass: "thumbnail-image",
-    },
-  ];
+
+  useEffect(() => {
+    console.log("currentBook:", currentBook);
+    if (currentBook) {
+      // build images
+      const images = [];
+      if (currentBook.thumbnail) {
+        images.push({
+          original: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+            currentBook.thumbnail
+          }`,
+          thumbnail: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+            currentBook.thumbnail
+          }`,
+          originalClass: "original-image", // class này cho vào để custom Css
+          thumbnailClass: "thumbnail-image", // 2 cái này để cho vào css
+        });
+      }
+      if (currentBook.slider) {
+        // slider laf 1 mảng nên dùng map để push, cũng như bên phần admin phần updateBook
+        currentBook.slider.map((item) => {
+          images.push({
+            original: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+            thumbnail: `${
+              import.meta.env.VITE_BACKEND_URL
+            }/images/book/${item}`,
+            originalClass: "original-image", // class này cho vào để custom Css
+            thumbnailClass: "thumbnail-image", // 2 cái này để cho vào css
+          });
+        });
+      }
+      setImgGallery(images);
+    }
+  }, [currentBook]);
+
   const handleOnClickImage = () => {
     //get current index onClick  để hiện modal
     setIsOpenModalGallery(true);
@@ -77,7 +68,7 @@ const BookDetail = (props: IProps) => {
       <div
         className="view-detail-book"
         style={{
-          maxWidth: 1440,
+          maxWidth: 1170,
           margin: "0 auto",
           minHeight: "calc(100vh - 150px)",
         }}
@@ -89,7 +80,7 @@ const BookDetail = (props: IProps) => {
               {" "}
               <ImageGallery
                 ref={refGallery}
-                items={images}
+                items={imgGallery} // dùng state quảng li
                 showPlayButton={false} //hide play button
                 showFullscreenButton={false} //hide fullscreen button
                 renderLeftNav={() => <></>} //left arrow === <> </>
@@ -104,7 +95,7 @@ const BookDetail = (props: IProps) => {
                 {" "}
                 <ImageGallery
                   ref={refGallery}
-                  items={images}
+                  items={imgGallery}
                   showPlayButton={false} //hide play button
                   showFullscreenButton={false} //hide fullscreen button
                   renderLeftNav={() => <></>} //left arrow === <> </>
@@ -114,11 +105,9 @@ const BookDetail = (props: IProps) => {
               </Col>
               <Col span={24}>
                 <div className="author">
-                  Tác giả : <a href="#">Jo Hemmings</a>
+                  Tác giả : <a href="#">{currentBook?.author}</a>
                 </div>
-                <div className="title">
-                  How Psychology Works - Hiểu Hết Về Tâm Lý Học
-                </div>
+                <div className="title">{currentBook?.mainText}</div>
                 <div className="rating">
                   <Rate
                     value={5}
@@ -127,7 +116,7 @@ const BookDetail = (props: IProps) => {
                   />
                   <span className="sold">
                     {" "}
-                    <Divider type="vertical" /> đã bán 1000
+                    <Divider type="vertical" /> {currentBook?.sold ?? 0}
                   </span>
                 </div>
                 <div className="price">
@@ -136,7 +125,7 @@ const BookDetail = (props: IProps) => {
                     {new Intl.NumberFormat("vi-VN", {
                       style: "currency",
                       currency: "VND",
-                    }).format(696966666)}
+                    }).format(currentBook?.price ?? 0)}
                   </span>
                 </div>
                 <div className="delivery">
@@ -162,7 +151,7 @@ const BookDetail = (props: IProps) => {
                     <BsCartPlus className="icon-cart" />
                     <span>Thêm vào giỏ hàng</span>
                   </button>
-                  <button className="now">Mua ngay</button>v
+                  <button className="now">Mua ngay</button>
                 </div>
               </Col>
             </Col>
@@ -173,8 +162,8 @@ const BookDetail = (props: IProps) => {
         isOpen={isOpenModalGallery}
         setIsOpen={setIsOpenModalGallery}
         currentIndex={currentIndex}
-        items={images}
-        title={"hardcode"}
+        items={imgGallery}
+        title={currentBook?.mainText ?? ""}
       />
     </div>
   );
