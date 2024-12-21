@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/book",
+        path: "/book/:id", // truyền động theo id dùng use param để lấy thư viện react router-dom
         element: <BookPage />,
       },
       {

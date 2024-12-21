@@ -15,6 +15,7 @@ import {
 } from "antd";
 import type { FormProps } from "antd";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "styles/home.scss";
 type FieldType = {
   range: {
@@ -41,6 +42,7 @@ const HomePage = () => {
   const [filter, setFilter] = useState<string>("");
   const [sortQuery, setSortQuery] = useState<string>("sort=-sold");
   //
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const handleChangeFilter = (changedValues: any, values: any) => {
     console.log(">>> check handleChangeFilter:", changedValues, values);
@@ -313,7 +315,11 @@ const HomePage = () => {
                 <Row className="customize-row">
                   {listBook?.map((item, index) => {
                     return (
-                      <div className="column" key={`book-${index}`}>
+                      <div
+                        className="column"
+                        key={`book-${index}`}
+                        onClick={() => navigate(`/book/${item._id}`)}
+                      >
                         <div className="wrapper">
                           <div className="thumbnail">
                             <img

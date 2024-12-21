@@ -15,6 +15,13 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "modern-compiler", // or "modern"
+        silenceDeprecations: [
+          "mixed-decls",
+          "color-functions",
+          "global-builtin",
+          "import",
+        ],
+        // additionalData: `@import "react-image-gallery/styles/scss/image-gallery.scss";`,
       },
     },
   },
