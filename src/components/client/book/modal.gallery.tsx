@@ -39,6 +39,8 @@ const ModalGallery = (props: IProps) => {
             ref={refGallery}
             startIndex={currentIndex} // start at current index
             items={items}
+            renderLeftNav={() => <></>} //left arrow === <> </>
+            renderRightNav={() => <></>} //right arrow === <> </>
             showPlayButton={false} //hide play button
             showFullscreenButton={false} //hide fullscreen button
             showThumbnails={false}

@@ -1,4 +1,5 @@
 import BookDetail from "@/components/client/book/book.detail";
+import BookLoader from "@/components/client/book/book.loader";
 import { getBookByIdAPI } from "@/services/api";
 import { App } from "antd";
 import { useEffect, useState } from "react";
@@ -24,7 +25,7 @@ const BookPage = () => {
             description: res.message,
           });
         }
-        setIsLoadingBook(true);
+        setIsLoadingBook(false); // tesst doan nay
       };
       fetchBookById();
 
@@ -33,7 +34,11 @@ const BookPage = () => {
   }, [id]);
   return (
     <>
-      <BookDetail currentBook={currentBook} />
+      {isLoadingBook ? (
+        <BookLoader />
+      ) : (
+        <BookDetail currentBook={currentBook} />
+      )}
     </>
   );
 };
