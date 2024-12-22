@@ -5,6 +5,8 @@ import ImageGallery from "react-image-gallery";
 import { Col, Divider, Rate, Row } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
+import { useCurrentApp } from "@/components/context/app.context";
+
 interface IProps {
   currentBook: IBookTable | null;
 }
@@ -12,7 +14,7 @@ type UserAction = "MINUS" | "PLUS"; // xem handleChangeButton() de biet cach dun
 
 const BookDetail = (props: IProps) => {
   const { currentBook } = props;
-
+  const { carts, setCarts } = useCurrentApp();
   const [imgGallery, setImgGallery] = useState<
     {
       original: string;
@@ -21,13 +23,13 @@ const BookDetail = (props: IProps) => {
       thumbnailClass: string; // 2 cái này để cho vào css
     }[]
   >([]);
-  const [isOpenModalGallery, setIsOpenModalGallery] = useState<Boolean>(false);
+  const [isOpenModalGallery, setIsOpenModalGallery] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const refGallery = useRef<ImageGallery>(null); // thuộc tính truy cập trực tiếp vào DOM, mà không làm cho component render
   const [currentQuanity, setCurrentQuantity] = useState<number>(1); // quản lí dữ liệu input số lượng
 
   useEffect(() => {
-    console.log("currentBook:", currentBook);
+    //console.log("currentBook:", currentBook);
     if (currentBook) {
       // build images
       const images = [];
@@ -64,7 +66,7 @@ const BookDetail = (props: IProps) => {
     //get current index onClick  để hiện modal
     setIsOpenModalGallery(true);
     setCurrentIndex(refGallery?.current?.getCurrentIndex() ?? 0); // thêm dấu ?? không thì bị lỗi,muốn test có thể bỏ ?? rồi test chatgpt
-    console.log("check index:", refGallery.current?.getCurrentIndex()); // tuỳ bài toán mới dùng index ,đọc tài liệu trước khi dùng
+    // console.log("check index:", refGallery.current?.getCurrentIndex()); // tuỳ bài toán mới dùng index ,đọc tài liệu trước khi dùng
   };
   /**
    *  exam:
@@ -99,6 +101,42 @@ function handleAction(action: UserAction) {
       }
     }
   };
+  const handleAddToCart = () => {
+    // update localStorage
+    const cartStorage = localStorage.getItem("carts");
+    if (cartStorage && currentBook) {
+      // update
+      const carts = JSON.parse(cartStorage) as ICart[]; // chuyển từ JSON sang data và có đặt kiểu dữ liệu
+      //check exist
+      let isExistIndex = carts.findIndex((c) => c._id === currentBook._id);
+      if (isExistIndex > -1) {
+        // có rồi thì cái đấy rồi cập nhật thêm
+        carts[isExistIndex].quantity =
+          carts[isExistIndex].quantity + currentQuanity;
+      } else {
+        // chưa có thì thêm nó vào giỏ hàng
+        carts.push({
+          _id: currentBook._id,
+          quantity: currentQuanity, // cú pháp ở đây không có dấu ! vì đã được đảm bảo ở điều kiện if ở bên trên là nó ko null
+          detail: currentBook,
+        });
+      }
+      localStorage.setItem("carts", JSON.stringify(carts)); // lưu vào localStorage
+    } else {
+      //create
+      const data = [
+        {
+          _id: currentBook?._id!, // về phần dấu !,Khi viết _id: currentBook?._id!, người lập trình có thể đảm bảo rằng họ chắc chắn _id sẽ luôn có giá trị khi được gán.
+          quantity: currentQuanity,
+          detail: currentBook!,
+        },
+      ];
+      localStorage.setItem("carts", JSON.stringify(data)); // localStorage có kiểu string,string nên phải convert data sang String
+      //sync React Context | lưu vào conText
+      setCarts(data);
+    }
+  };
+  console.log("carts:", carts);
   return (
     <div style={{ background: "#efefef", padding: "20px 0" }}>
       <div
@@ -188,7 +226,7 @@ function handleAction(action: UserAction) {
                   </span>
                 </div>
                 <div className="buy">
-                  <button className="cart">
+                  <button className="cart" onClick={() => handleAddToCart()}>
                     <BsCartPlus className="icon-cart" />
                     <span>Thêm vào giỏ hàng</span>
                   </button>
