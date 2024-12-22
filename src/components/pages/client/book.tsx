@@ -17,7 +17,7 @@ const BookPage = () => {
         const res = await getBookByIdAPI(id);
 
         if (res && res.data) {
-          console.log("data:", res.data);
+          // console.log("data:", res.data);
           setCurrentBook(res.data);
         } else {
           notification.error({

@@ -122,6 +122,8 @@ function handleAction(action: UserAction) {
         });
       }
       localStorage.setItem("carts", JSON.stringify(carts)); // lưu vào localStorage
+      //sync React Context
+      setCarts(carts);
     } else {
       //create
       const data = [
