@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaReact } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { VscSearchFuzzy } from "react-icons/vsc";
-import { Divider, Badge, Drawer, Avatar, Popover } from "antd";
+import { Divider, Badge, Drawer, Avatar, Popover, Empty } from "antd";
 import { Dropdown, Space } from "antd";
 import { useNavigate } from "react-router";
 import "./app.header.scss";
@@ -63,28 +63,35 @@ const AppHeader = (props: any) => {
   const contentPopover = () => {
     return (
       <div className="pop-cart-body">
-        {/* <div className='pop-cart-content'>
-                    {carts?.map((book, index) => {
-                        return (
-                            <div className='book' key={`book-${index}`}>
-                                <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${book?.detail?.thumbnail}`} />
-                                <div>{book?.detail?.mainText}</div>
-                                <div className='price'>
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book?.detail?.price ?? 0)}
-                                </div>
-                            </div>
-                        )
-                    })}
+        <div className="pop-cart-content">
+          {carts?.map((book, index) => {
+            return (
+              <div className="book" key={`book-${index}`}>
+                <img
+                  src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${
+                    book?.detail?.thumbnail
+                  }`}
+                />
+                <div>{book?.detail?.mainText}</div>
+                <div className="price">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(book?.detail?.price ?? 0)}
                 </div>
-                {carts.length > 0 ?
-                    <div className='pop-cart-footer'>
-                        <button onClick={() => navigate('/order')}>Xem giỏ hàng</button>
-                    </div>
-                    :
-                    <Empty
-                        description="Không có sản phẩm trong giỏ hàng"
-                    />
-                } */}
+              </div>
+            );
+          })}
+        </div>
+        {/* footer có nút xem chi giỏ hàng */}
+        {carts.length > 0 ? (
+          <div className="pop-cart-footer">
+            <button onClick={() => navigate("/order")}>Xem giỏ hàng</button>
+          </div>
+        ) : (
+          <Empty description="Không có sản phẩm trong giỏ hàng" />
+        )}
+        {/* <Empty description="Không có sản phẩm trong giỏ hàng" /> */}
       </div>
     );
   };
@@ -126,7 +133,7 @@ const AppHeader = (props: any) => {
                 <Popover
                   className="popover-carts"
                   placement="topRight"
-                  rootClassName="popover-carts"
+                  rootClassName="popover-carts" // chú ý phần này vì Modal, Popover... không render trong <div id="root">
                   title={"Sản phẩm mới thêm"}
                   content={contentPopover}
                   arrow={true}
@@ -135,7 +142,7 @@ const AppHeader = (props: any) => {
                     // count={carts?.length ?? 0}
                     count={carts.length ?? 0}
                     size={"small"}
-                    showZero
+                    showZero // show cả khi giỏ hàng ko có gì
                   >
                     <FiShoppingCart className="icon-cart" />
                   </Badge>
