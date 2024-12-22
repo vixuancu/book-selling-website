@@ -8,6 +8,8 @@ import { BsCartPlus } from "react-icons/bs";
 interface IProps {
   currentBook: IBookTable | null;
 }
+type UserAction = "MINUS" | "PLUS"; // xem handleChangeButton() de biet cach dung
+
 const BookDetail = (props: IProps) => {
   const { currentBook } = props;
 
@@ -19,9 +21,10 @@ const BookDetail = (props: IProps) => {
       thumbnailClass: string; // 2 cái này để cho vào css
     }[]
   >([]);
-  const [isOpenModalGallery, setIsOpenModalGallery] = useState(false);
+  const [isOpenModalGallery, setIsOpenModalGallery] = useState<Boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const refGallery = useRef<ImageGallery>(null); // thuộc tính truy cập trực tiếp vào DOM, mà không làm cho component render
+  const [currentQuanity, setCurrentQuantity] = useState<number>(1); // quản lí dữ liệu input số lượng
 
   useEffect(() => {
     console.log("currentBook:", currentBook);
@@ -62,6 +65,39 @@ const BookDetail = (props: IProps) => {
     setIsOpenModalGallery(true);
     setCurrentIndex(refGallery?.current?.getCurrentIndex() ?? 0); // thêm dấu ?? không thì bị lỗi,muốn test có thể bỏ ?? rồi test chatgpt
     console.log("check index:", refGallery.current?.getCurrentIndex()); // tuỳ bài toán mới dùng index ,đọc tài liệu trước khi dùng
+  };
+  /**
+   *  exam:
+   * // Định nghĩa kiểu UserAction
+type UserAction = "MINUS" | "PLUS";
+
+// Hàm nhận tham số kiểu UserAction
+function handleAction(action: UserAction) {
+  if (action === "MINUS") {
+    console.log("Thực hiện trừ.");
+  } else if (action === "PLUS") {
+    console.log("Thực hiện cộng.");
+  }
+}
+   */
+  const handleChangeButton = (type: UserAction) => {
+    if (type === "MINUS") {
+      if (currentQuanity - 1 <= 0) return;
+      setCurrentQuantity(currentQuanity - 1);
+    }
+    if (type === "PLUS" && currentBook) {
+      // có thể kiểm tra currentBook ở đây
+      // if(currentQuanity=== +currentBook?.quantity) return; bị báo lỗi currentBook có thể là undefined, có thể sửa dấu + ở đầu
+      if (currentQuanity === +currentBook?.quantity) return;
+      setCurrentQuantity(currentQuanity + 1);
+    }
+  };
+  const handleOnchangeInput = (value: string) => {
+    if (!isNaN(+value)) {
+      if (currentBook && +value > 0 && +value <= currentBook.quantity) {
+        setCurrentQuantity(+value);
+      }
+    }
   };
   return (
     <div style={{ background: "#efefef", padding: "20px 0" }}>
@@ -137,11 +173,16 @@ const BookDetail = (props: IProps) => {
                 <div className="quantity">
                   <span className="left">Số lượng</span>
                   <span className="right">
-                    <button>
+                    <button onClick={() => handleChangeButton("MINUS")}>
                       <MinusOutlined />
                     </button>
-                    <input defaultValue={1} />
-                    <button>
+                    <input
+                      value={currentQuanity}
+                      onChange={(event) =>
+                        handleOnchangeInput(event.target.value)
+                      }
+                    />
+                    <button onClick={() => handleChangeButton("PLUS")}>
                       <PlusOutlined />
                     </button>
                   </span>
