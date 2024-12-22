@@ -27,9 +27,14 @@ export const AppProvider = (props: TProps) => {
   useEffect(() => {
     const fetchAccount = async () => {
       const res = await fetchAccountAPI();
+      const carts = localStorage.getItem("carts"); // đồng bộ hóa carts từ localStorage
+
       if (res.data) {
         setUser(res.data.user);
         setIsAuthenticated(true);
+        if (carts) {
+          setCarts(JSON.parse(carts)); // parse từ json về dữ liệu , đồng thời cho context quản lí
+        }
       }
       setIsAppLoading(false);
     };

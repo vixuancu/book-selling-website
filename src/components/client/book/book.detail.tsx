@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "styles/book.scss";
 import ModalGallery from "./modal.gallery";
 import ImageGallery from "react-image-gallery";
-import { Col, Divider, Rate, Row } from "antd";
+import { App, Col, Divider, Rate, Row } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
 import { useCurrentApp } from "@/components/context/app.context";
@@ -15,6 +15,7 @@ type UserAction = "MINUS" | "PLUS"; // xem handleChangeButton() de biet cach dun
 const BookDetail = (props: IProps) => {
   const { currentBook } = props;
   const { carts, setCarts } = useCurrentApp();
+  const { message } = App.useApp();
   const [imgGallery, setImgGallery] = useState<
     {
       original: string;
@@ -137,6 +138,7 @@ function handleAction(action: UserAction) {
       //sync React Context | lưu vào conText
       setCarts(data);
     }
+    message.success("Thêm sản phẩm vào giỏ hàng thành công.");
   };
   console.log("carts:", carts);
   return (
