@@ -1,6 +1,17 @@
 import { useCurrentApp } from "@/components/context/app.context";
+import { createOrderAPI } from "@/services/api";
 import { DeleteTwoTone } from "@ant-design/icons";
-import { Col, Divider, Form, Input, Radio, Row, Space } from "antd";
+import {
+  App,
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Radio,
+  Row,
+  Space,
+} from "antd";
 import { FormProps } from "antd/lib";
 import { useEffect, useState } from "react";
 import "styles/order.scss";
@@ -22,8 +33,40 @@ const Payment = (props: IProps) => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
+  const { message, notification } = App.useApp();
   const handlePlaceOrder: FormProps<FieldType>["onFinish"] = async (values) => {
-    console.log(values);
+    const { fullName, phone, address, method } = values;
+    const detail = carts.map((item) => ({
+      _id: item._id,
+      quantity: item.quantity,
+      bookName: item.detail.mainText,
+    }));
+
+    setIsSubmit(true);
+    const res = await createOrderAPI(
+      fullName,
+      address,
+      phone,
+      totalPrice,
+      method,
+      detail
+    );
+    if (res?.data) {
+      localStorage.removeItem("carts");
+      setCarts([]);
+      message.success("Mua hàng thành công!");
+      setCurrentStep(2);
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description:
+          res.message && Array.isArray(res.message) // xét điều kiện respon message
+            ? res.message[0]
+            : res.message,
+        duration: 3,
+      });
+    }
+    setIsSubmit(false);
   };
   const handleRemoveBook = (_id: string) => {
     const cartStorage = localStorage.getItem("carts");
@@ -168,7 +211,15 @@ const Payment = (props: IProps) => {
               </span>
             </div>
             <Divider style={{ margin: "10px 0" }} />
-            <button type="submit">Đặt Hàng ({carts?.length ?? 0})</button>
+            {/* <button type="submit">Đặt Hàng ({carts?.length ?? 0})</button> */}
+            <Button
+              color="danger"
+              variant="solid"
+              htmlType="submit"
+              loading={isSubmit}
+            >
+              Đặt Hàng ({carts?.length ?? 0})
+            </Button>
           </div>
         </Form>
       </Col>

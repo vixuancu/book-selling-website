@@ -6,7 +6,7 @@ export const loginAPI = (username: string, password: string) => {
     { username, password },
     {
       headers: {
-        delay: 3000,
+        delay: 1000,
       },
     }
   );
@@ -156,5 +156,23 @@ export const getBookByIdAPI = (_id: string) => {
     headers: {
       delay: 1000,
     },
+  });
+};
+export const createOrderAPI = (
+  name: string,
+  address: string,
+  phone: string,
+  totalPrice: number,
+  type: string,
+  detail: any
+) => {
+  const urlBackend = `/api/v1/order`;
+  return axios.post<IBackendRes<IBookTable>>(urlBackend, {
+    name,
+    address,
+    phone,
+    totalPrice,
+    type,
+    detail,
   });
 };
