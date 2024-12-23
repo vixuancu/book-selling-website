@@ -19,6 +19,7 @@ import LayoutAdmin from "components/layout/layout.admin";
 import { ConfigProvider } from "antd";
 import enUS from "antd/locale/en_US";
 import viVN from "antd/locale/vi_VN";
+import OrderPage from "@/components/pages/client/order";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,6 +32,14 @@ const router = createBrowserRouter([
       {
         path: "/book/:id", // truyền động theo id dùng use param để lấy thư viện react router-dom
         element: <BookPage />,
+      },
+      {
+        path: "/order", // truyền động theo id dùng use param để lấy thư viện react router-dom
+        element: (
+          <ProtectedRoute>
+            <OrderPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/about",
