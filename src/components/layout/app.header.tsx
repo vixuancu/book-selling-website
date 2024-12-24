@@ -9,11 +9,13 @@ import "./app.header.scss";
 import { Link } from "react-router-dom";
 import { useCurrentApp } from "components/context/app.context";
 import { logoutAPI } from "@/services/api";
+import ManageAccount from "components/client/account";
 
 const AppHeader = (props: any) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const { isAuthenticated, user, setUser, setIsAuthenticated, carts } =
     useCurrentApp();
+  const [openManageAccount, setOpenManageAccount] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -30,7 +32,10 @@ const AppHeader = (props: any) => {
   let items = [
     {
       label: (
-        <label style={{ cursor: "pointer" }} onClick={() => alert("me")}>
+        <label
+          style={{ cursor: "pointer" }}
+          onClick={() => setOpenManageAccount(true)}
+        >
           Quản lý tài khoản
         </label>
       ),
@@ -50,6 +55,7 @@ const AppHeader = (props: any) => {
     },
   ];
   if (user?.role === "ADMIN") {
+    //Hàm unshift() trong JavaScript được sử dụng để thêm một hoặc nhiều phần tử vào đầu mảng và trả về độ dài mới của mảng sau khi thêm phần tử.
     items.unshift({
       label: <Link to="/admin">Trang quản trị</Link>,
       key: "admin",
@@ -179,6 +185,10 @@ const AppHeader = (props: any) => {
         <p onClick={() => handleLogout()}>Đăng xuất</p>
         <Divider />
       </Drawer>
+      <ManageAccount
+        isModalOpen={openManageAccount}
+        setIsModalOpen={setOpenManageAccount}
+      />
     </>
   );
 };
