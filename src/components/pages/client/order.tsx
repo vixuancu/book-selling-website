@@ -39,12 +39,12 @@ const OrderPage = () => {
               title="Đặt hàng thành công"
               subTitle="Hệ thông đã ghi nhận thông tin đơn hàng của bạn."
               extra={[
-                <Button key="home">
-                  <Link to={"/"} type="primary">
-                    Trang Chủ
-                  </Link>
+                <Button key="home" type="primary">
+                  <Link to={"/"}>Trang Chủ</Link>
                 </Button>,
-                <Button key="history">Lịch sử mua hàng</Button>,
+                <Button key="history">
+                  <Link to={"/history"}>Lịch sử mua hàng</Link>{" "}
+                </Button>,
               ]}
             />
           )}
