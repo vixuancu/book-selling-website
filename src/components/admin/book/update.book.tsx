@@ -136,7 +136,7 @@ const UpdateBook = (props: IProps) => {
       category
     );
     if (res && res.data) {
-      message.success("Tạo mới sách thành công!");
+      message.success("update sách thành công!");
       form.resetFields();
       setFileListSlider([]);
       setFileListThumbnail([]);

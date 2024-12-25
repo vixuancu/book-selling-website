@@ -85,6 +85,7 @@ declare global {
     email: string;
     phone: string;
     userId: string;
+    address: string;
     detail: {
       bookName: string;
       quantity: number;
@@ -94,4 +95,5 @@ declare global {
     createdAt: Date;
     updatedAt: Date;
   }
+  interface IOrderTable extends IHistory {}
 }

@@ -207,3 +207,18 @@ export const updateUserPasswordAPI = (
     newpass,
   });
 };
+export const getDashboardAPI = () => {
+  const urlBackend = `/api/v1/database/dashboard`;
+  return axios.get<
+    // phaanf khai báo {... gợi ý code của Backend phản hồi có thể chưa dùng để là cái khác cũng dc}
+    IBackendRes<{
+      countOrder: number;
+      countUser: number;
+      countBook: number;
+    }>
+  >(urlBackend);
+};
+export const getOrderAPI = (query: string) => {
+  const urlBackend = `/api/v1/order?${query}`;
+  return axios.get<IBackendRes<IModelPaginate<IOrderTable>>>(urlBackend);
+};

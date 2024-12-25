@@ -81,12 +81,10 @@ const TableBook = () => {
       title: "Thể loại",
       dataIndex: "category",
       hideInSearch: true,
-      sorter: true,
     },
     {
       title: "Tác giả",
       dataIndex: "author",
-      sorter: true,
     },
     {
       title: "Giá tiền",
@@ -186,22 +184,22 @@ const TableBook = () => {
             });
           }
           // Xử lý sắp xếp (sort)
-          //
-          if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
-          } else query += `&sort=-createdAt`;
-          if (sort && sort.mainText) {
-            query += `&sort=${
-              sort.mainText === "ascend" ? "mainText" : "-mainText"
-            }`;
-          }
-          if (sort && sort.author) {
-            query += `&sort=${sort.author === "ascend" ? "author" : "-author"}`;
-          }
-          if (sort && sort.price) {
-            query += `&sort=${sort.price === "ascend" ? "price" : "-price"}`;
+          if (sort) {
+            if (sort.mainText) {
+              query += `&sort=${
+                sort.mainText === "ascend" ? "mainText" : "-mainText"
+              }`;
+            } else if (sort.price) {
+              query += `&sort=${sort.price === "ascend" ? "price" : "-price"}`;
+            } else if (sort.createdAt) {
+              query += `&sort=${
+                sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
+              }`;
+            } else {
+              query += `&sort=-createdAt`; // Mặc định nếu không chọn sort nào
+            }
+          } else {
+            query += `&sort=-createdAt`; // Mặc định nếu không có sort
           }
 
           const res = await getBookAPI(query);

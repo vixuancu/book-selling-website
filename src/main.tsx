@@ -98,7 +98,9 @@ const router = createBrowserRouter([
         path: "/admin",
         element: (
           <ProtectedRoute>
-            <div>admin page</div>
+            <div>
+              <DashBoardPage />
+            </div>
           </ProtectedRoute>
         ),
       },
