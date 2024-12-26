@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppstoreOutlined,
   ExceptionOutlined,
@@ -10,7 +10,7 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Dropdown, Space, Avatar } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useCurrentApp } from "components/context/app.context";
 import type { MenuProps } from "antd";
@@ -21,8 +21,8 @@ const { Content, Footer, Sider } = Layout;
 
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("dashboard");
-  const { user, setUser, isAuthenticated, setIsAuthenticated } =
+  const [activeMenu, setActiveMenu] = useState("");
+  const { user, setUser, setIsAuthenticated, isAuthenticated, setCarts } =
     useCurrentApp();
 
   const handleLogout = async () => {
@@ -30,46 +30,50 @@ const LayoutAdmin = () => {
     const res = await logoutAPI();
     if (res.data) {
       setUser(null);
+      setCarts([]);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
+      localStorage.removeItem("carts");
     }
   };
+
+  const location = useLocation();
 
   const items: MenuItem[] = [
     {
       label: <Link to="/admin">Dashboard</Link>,
-      key: "dashboard",
+      key: "/admin",
       icon: <AppstoreOutlined />,
     },
     {
       label: <span>Manage Users</span>,
-      key: "user",
+      key: "admin/user",
       icon: <UserOutlined />,
       children: [
         {
           label: <Link to="/admin/user">CRUD</Link>,
-          key: "crud",
+          key: "/admin/user",
           icon: <TeamOutlined />,
         },
-        // {
-        //     label: 'Files1',
-        //     key: 'file1',
-        //     icon: <TeamOutlined />,
-        // }
       ],
     },
     {
       label: <Link to="/admin/book">Manage Books</Link>,
-      key: "book",
+      key: "/admin/book",
       icon: <ExceptionOutlined />,
     },
     {
       label: <Link to="/admin/order">Manage Orders</Link>,
-      key: "order",
+      key: "/admin/order",
       icon: <DollarCircleOutlined />,
     },
   ];
-
+  useEffect(() => {
+    const active: any = items.find(
+      (item) => location.pathname === (item?.key as any)
+    ) ?? { key: "/admin" }; // hàm find trả về item của điều kiện
+    setActiveMenu(active.key);
+  }, [location]);
   const itemsDropdown = [
     {
       label: (
@@ -119,7 +123,8 @@ const LayoutAdmin = () => {
             Admin
           </div>
           <Menu
-            defaultSelectedKeys={[activeMenu]}
+            defaultSelectedKeys={[activeMenu]} //Dùng khi nào?: Thích hợp khi bạn muốn chỉ định giá trị ban đầu của menu mà không cần thay đổi nó trong suốt vòng đời của thành phần.
+            selectedKeys={[activeMenu]}
             mode="inline"
             items={items}
             onClick={(e) => setActiveMenu(e.key)}

@@ -15,7 +15,7 @@ import {
 } from "antd";
 import type { FormProps } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import "styles/home.scss";
 type FieldType = {
   range: {
@@ -27,6 +27,7 @@ type FieldType = {
 
 // phần này xử dụng state react nhiều
 const HomePage = () => {
+  const [searchTerm] = useOutletContext() as any;
   const [listCategory, setListCategory] = useState<
     {
       label: string;
@@ -122,7 +123,7 @@ const HomePage = () => {
   //component did update
   useEffect(() => {
     fetchBook();
-  }, [current, pageSize, filter, sortQuery]); // khi thay đổi bất kì giá trị nào trong mảng thì gọi lại hàm fetchBook
+  }, [current, pageSize, filter, sortQuery, searchTerm]); // khi thay đổi bất kì giá trị nào trong mảng thì gọi lại hàm fetchBook
 
   // hàm fetch books
   const fetchBook = async () => {
@@ -133,6 +134,9 @@ const HomePage = () => {
     }
     if (sortQuery) {
       query += `&${sortQuery}`;
+    }
+    if (searchTerm) {
+      query += `&mainText=/${searchTerm}/i`;
     }
     const res = await getBookAPI(query);
     if (res && res.data) {

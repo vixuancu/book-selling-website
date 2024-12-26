@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import "styles/book.scss";
 import ModalGallery from "./modal.gallery";
 import ImageGallery from "react-image-gallery";
-import { App, Col, Divider, Rate, Row } from "antd";
+import { App, Breadcrumb, Col, Divider, Rate, Row } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
 import { useCurrentApp } from "@/components/context/app.context";
+import { Link, useNavigate } from "react-router-dom";
 
 interface IProps {
   currentBook: IBookTable | null;
@@ -14,8 +15,9 @@ type UserAction = "MINUS" | "PLUS"; // xem handleChangeButton() de biet cach dun
 
 const BookDetail = (props: IProps) => {
   const { currentBook } = props;
-  const { carts, setCarts } = useCurrentApp();
+  const { carts, setCarts, user } = useCurrentApp();
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const [imgGallery, setImgGallery] = useState<
     {
       original: string;
@@ -102,7 +104,11 @@ function handleAction(action: UserAction) {
       }
     }
   };
-  const handleAddToCart = () => {
+  const handleAddToCart = (isBuyNow = false) => {
+    if (!user) {
+      message.error("Bạn cần đăng nhập để thực hiện tính năng này.");
+      return;
+    }
     // update localStorage
     const cartStorage = localStorage.getItem("carts");
     if (cartStorage && currentBook) {
@@ -138,7 +144,12 @@ function handleAction(action: UserAction) {
       //sync React Context | lưu vào conText
       setCarts(data);
     }
-    message.success("Thêm sản phẩm vào giỏ hàng thành công.");
+
+    if (isBuyNow) {
+      navigate("/order");
+    } else {
+      message.success("Thêm sản phẩm vào giỏ hàng thành công.");
+    }
   };
   console.log("carts:", carts);
   return (
@@ -151,6 +162,17 @@ function handleAction(action: UserAction) {
           minHeight: "calc(100vh - 150px)",
         }}
       >
+        <Breadcrumb
+          separator=">"
+          items={[
+            {
+              title: <Link to={"/"}>Trang Chủ</Link>,
+            },
+            {
+              title: "Xem chi tiết sách",
+            },
+          ]}
+        />
         <div style={{ padding: "20px", background: "#fff", borderRadius: 5 }}>
           <Row gutter={[20, 20]}>
             {/* book detail left */}
@@ -230,11 +252,16 @@ function handleAction(action: UserAction) {
                   </span>
                 </div>
                 <div className="buy">
-                  <button className="cart" onClick={() => handleAddToCart()}>
+                  <button
+                    className="cart"
+                    onClick={() => handleAddToCart(false)}
+                  >
                     <BsCartPlus className="icon-cart" />
                     <span>Thêm vào giỏ hàng</span>
                   </button>
-                  <button className="now">Mua ngay</button>
+                  <button className="now" onClick={() => handleAddToCart(true)}>
+                    Mua ngay
+                  </button>
                 </div>
               </Col>
             </Col>

@@ -1,8 +1,9 @@
 import DetailOrder from "@/components/client/order";
 import Payment from "@/components/client/order/payment";
-import { Button, Result, Steps } from "antd";
+import { Breadcrumb, Button, Result, Steps } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { isMobile } from "react-device-detect";
 import "styles/order.scss";
 const OrderPage = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -14,23 +15,36 @@ const OrderPage = () => {
           className="order-container"
           style={{ maxWidth: 1440, margin: "0 auto" }}
         >
-          <div className="order-steps">
-            <Steps
-              size="small"
-              current={currentStep}
-              items={[
-                {
-                  title: "Đơn hàng",
-                },
-                {
-                  title: "Đặt hàng",
-                },
-                {
-                  title: "Thanh toán",
-                },
-              ]}
-            />
-          </div>
+          <Breadcrumb
+            separator=">"
+            items={[
+              {
+                title: <Link to={"/"}>Trang Chủ</Link>,
+              },
+              {
+                title: "Chi Tiết Giỏ Hàng",
+              },
+            ]}
+          />
+          {!isMobile && (
+            <div className="order-steps" style={{ marginTop: 10 }}>
+              <Steps
+                size="small"
+                current={currentStep}
+                items={[
+                  {
+                    title: "Đơn hàng",
+                  },
+                  {
+                    title: "Đặt hàng",
+                  },
+                  {
+                    title: "Thanh toán",
+                  },
+                ]}
+              />
+            </div>
+          )}
           {currentStep === 0 && <DetailOrder setCurrentStep={setCurrentStep} />}
           {currentStep === 1 && <Payment setCurrentStep={setCurrentStep} />}
           {currentStep === 2 && (
