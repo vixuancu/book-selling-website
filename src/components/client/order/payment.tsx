@@ -1,5 +1,5 @@
 import { useCurrentApp } from "@/components/context/app.context";
-import { createOrderAPI } from "@/services/api";
+import { createOrderAPI, getVNPayUrlAPI } from "@/services/api";
 import { DeleteTwoTone } from "@ant-design/icons";
 import {
   App,
@@ -16,6 +16,7 @@ import { FormProps } from "antd/lib";
 import { useEffect, useState } from "react";
 import "styles/order.scss";
 import { isMobile } from "react-device-detect";
+import { v4 as uuidv4 } from "uuid";
 const { TextArea } = Input;
 type UserMethod = "COD" | "BANKING";
 type FieldType = {
@@ -44,19 +45,51 @@ const Payment = (props: IProps) => {
     }));
 
     setIsSubmit(true);
-    const res = await createOrderAPI(
-      fullName,
-      address,
-      phone,
-      totalPrice,
-      method,
-      detail
-    );
+    let res = null;
+    const paymentRef = uuidv4();
+    if (method === "COD") {
+      res = await createOrderAPI(
+        fullName,
+        address,
+        phone,
+        totalPrice,
+        method,
+        detail
+      );
+    } else {
+      res = await createOrderAPI(
+        fullName,
+        address,
+        phone,
+        totalPrice,
+        method,
+        detail,
+        paymentRef
+      );
+    }
+
     if (res?.data) {
       localStorage.removeItem("carts");
       setCarts([]);
-      message.success("Mua hàng thành công!");
-      setCurrentStep(2);
+      if (method === "COD") {
+        message.success("Mua hàng thành công!");
+        setCurrentStep(2);
+      } else {
+        // redirect to vnpay
+        const r = await getVNPayUrlAPI(totalPrice, "vn", paymentRef);
+        if (r.data) {
+          window.location.href = r.data.url;
+        } else {
+          notification.error({
+            message: "Có lỗi xảy ra",
+            description:
+              r.message && Array.isArray(r.message) // xét điều kiện respon message
+                ? r.message[0]
+                : r.message,
+            duration: 3,
+          });
+        }
+      }
     } else {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -198,7 +231,7 @@ const Payment = (props: IProps) => {
                 <Radio.Group>
                   <Space direction="vertical">
                     <Radio value={"COD"}>Thanh toán khi nhận hàng</Radio>
-                    <Radio value={"BANKING"}>Chuyển khoản ngân hàng</Radio>
+                    <Radio value={"BANKING"}>Thanh toán bằng ví VNPAY</Radio>
                   </Space>
                 </Radio.Group>
               </Form.Item>

@@ -94,6 +94,8 @@ declare global {
     totalPrice: number;
     createdAt: Date;
     updatedAt: Date;
+    paymentStatus: string;
+    paymentRef: string;
   }
   interface IOrderTable extends IHistory {}
 }
