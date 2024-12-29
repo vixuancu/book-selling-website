@@ -3,8 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import "./login.scss";
 import { useState } from "react";
 import type { FormProps } from "antd";
-import { loginAPI } from "@/services/api";
+import { loginAPI, loginWithGoogleAPI } from "@/services/api";
 import { useCurrentApp } from "@/components/context/app.context";
+import { GoogleOutlined } from "@ant-design/icons";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 type FieldType = {
   username: string;
   password: string;
@@ -37,6 +40,42 @@ const LoginPage = () => {
       });
     }
   };
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const { data } = await axios(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${tokenResponse?.access_token}`,
+          },
+        }
+      );
+      if (data && data.email) {
+        //call backend create user
+
+        const res = await loginWithGoogleAPI("GOOGLE", data.email);
+        if (res && res?.data) {
+          setIsAuthenticated(true);
+          setUser(res.data.user);
+          localStorage.setItem("access_token", res.data.access_token);
+          message.success("Đăng nhập tài khoản thành công!");
+          navigate("/");
+          console.log(data.email);
+        } else {
+          notification.error({
+            message: "Có lỗi xảy ra",
+            description:
+              res.message && Array.isArray(res.message)
+                ? res.message[0]
+                : res.message,
+            duration: 5,
+          });
+        }
+      }
+
+      // console.log(tokenResponse)},
+    },
+  });
   return (
     <div className="login-page">
       <main className="main">
@@ -74,6 +113,22 @@ const LoginPage = () => {
                 </Button>
               </Form.Item>
               <Divider>Or</Divider>
+              <div
+                onClick={() => login()}
+                title="Đăng nhập với tài khoản Google"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  textAlign: "center",
+                  marginBottom: 25,
+                  cursor: "pointer",
+                }}
+              >
+                Đăng nhập với
+                <GoogleOutlined style={{ fontSize: 30, color: "green" }} />
+              </div>
               <p className="text text-normal" style={{ textAlign: "center" }}>
                 Chưa có tài khoản ?
                 <span>

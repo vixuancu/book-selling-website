@@ -71,7 +71,7 @@ const UserInfo = () => {
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { fullName, phone, _id } = values;
     setIsSubmit(true);
-    const res = await updateUserInfoAPI(_id, userAvatar, fullName, phone);
+    const res = await updateUserInfoAPI(fullName, phone, userAvatar, _id);
     if (res && res.data) {
       //update react context
       setUser({
@@ -125,7 +125,7 @@ const UserInfo = () => {
               <Form.Item<FieldType>
                 hidden
                 labelCol={{ span: 24 }}
-                label="_id"
+                label="id"
                 name="_id"
               >
                 {/* disabled là không thể điền vào inpput được  */}
