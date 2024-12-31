@@ -6,6 +6,7 @@ Các bước cài đặt: (chế độ development)
 2. cài đặt thư viện: npm i
 3. Update file .env.development (nếu cần thiết)
 4. Chạy dự án: npm run dev
+5. nodejs version 20.14.0
 
 ===
 
