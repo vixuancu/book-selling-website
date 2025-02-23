@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { useCurrentApp } from "components/context/app.context";
 import type { MenuProps } from "antd";
 import { logoutAPI } from "@/services/api";
+import ManageAccount from "../client/account";
 type MenuItem = Required<MenuProps>["items"][number];
 
 const { Content, Footer, Sider } = Layout;
@@ -24,7 +25,8 @@ const LayoutAdmin = () => {
   const [activeMenu, setActiveMenu] = useState("");
   const { user, setUser, setIsAuthenticated, isAuthenticated, setCarts } =
     useCurrentApp();
-
+  //
+  const [openManageAccount, setOpenManageAccount] = useState<boolean>(false);
   const handleLogout = async () => {
     //todo
     const res = await logoutAPI();
@@ -77,7 +79,10 @@ const LayoutAdmin = () => {
   const itemsDropdown = [
     {
       label: (
-        <label style={{ cursor: "pointer" }} onClick={() => alert("me")}>
+        <label
+          style={{ cursor: "pointer" }}
+          onClick={() => setOpenManageAccount(true)}
+        >
           Quản lý tài khoản
         </label>
       ),
@@ -162,10 +167,14 @@ const LayoutAdmin = () => {
             <Outlet />
           </Content>
           <Footer style={{ padding: 0, textAlign: "center" }}>
-            React Test Fresher &copy; Hỏi Dân IT - Made with <HeartTwoTone />
+            React vite &copy; vixuancu-hello <HeartTwoTone />
           </Footer>
         </Layout>
       </Layout>
+      <ManageAccount
+        isModalOpen={openManageAccount}
+        setIsModalOpen={setOpenManageAccount}
+      />
     </>
   );
 };
