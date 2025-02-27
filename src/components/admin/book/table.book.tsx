@@ -167,6 +167,7 @@ const TableBook = () => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
+        scroll={{ x: "max-content" }} // Kích hoạt scroll ngang nếu nội dung vượt quá kích thước
         request={async (params, sort, filter) => {
           console.log("params, sort, filter:", params, sort, filter);
           let query = "";

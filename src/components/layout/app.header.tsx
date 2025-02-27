@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaReact } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { VscSearchFuzzy } from "react-icons/vsc";
-import { Divider, Badge, Drawer, Avatar, Popover, Empty } from "antd";
+import { Divider, Badge, Drawer, Avatar, Popover, Empty, App } from "antd";
 import { Dropdown, Space } from "antd";
 import { useNavigate } from "react-router";
 import "./app.header.scss";
@@ -16,6 +16,7 @@ interface IProps {
   setSearchTerm: (v: string) => void;
 }
 const AppHeader = (props: any) => {
+  const { message, notification } = App.useApp();
   const [openDrawer, setOpenDrawer] = useState(false);
   const {
     isAuthenticated,
@@ -38,6 +39,7 @@ const AppHeader = (props: any) => {
       setIsAuthenticated(false);
       localStorage.removeItem("carts");
       localStorage.removeItem("access_token");
+      message.success("đăng xuất tài khoản thành công");
     }
   };
 

@@ -64,7 +64,7 @@ const TableOrder = () => {
   const actionRef = useRef<ActionType>(); // sử dụng useRef để gọi hành động reload table
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
     pages: 0,
     total: 0,
   });

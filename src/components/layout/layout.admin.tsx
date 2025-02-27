@@ -121,16 +121,26 @@ const LayoutAdmin = () => {
         <Sider
           theme="light"
           collapsible
+          breakpoint="md" // Ẩn sidebar khi màn hình nhỏ hơn md (768px)  code thêm sau
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
+          max-width={250} // Chiều rộng tối đa của sidebar  code thêm sau
+          collapsedWidth={80} // Chiều rộng khi thu gọn  code thêm sau
         >
-          <div style={{ height: 32, margin: 16, textAlign: "center" }}>
+          <div
+            style={{
+              height: 32,
+              margin: 16,
+              textAlign: "center",
+            }}
+          >
             Admin
           </div>
           <Menu
             defaultSelectedKeys={[activeMenu]} //Dùng khi nào?: Thích hợp khi bạn muốn chỉ định giá trị ban đầu của menu mà không cần thay đổi nó trong suốt vòng đời của thành phần.
             selectedKeys={[activeMenu]}
-            mode="inline"
+            // mode="inline"
+            mode={collapsed ? "vertical" : "inline"} // Nếu sidebar thu gọn thì dùng vertical code thêm sau có thể bỏ (đang test trên mobile)
             items={items}
             onClick={(e) => setActiveMenu(e.key)}
           />
